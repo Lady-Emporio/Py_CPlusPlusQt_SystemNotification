@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Notification", "Notification.pyproj", "{F28CEDB6-C737-4412-956A-753B66FB1767}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F28CEDB6-C737-4412-956A-753B66FB1767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28CEDB6-C737-4412-956A-753B66FB1767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28CEDB6-C737-4412-956A-753B66FB1767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28CEDB6-C737-4412-956A-753B66FB1767}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {928F5E90-1017-4D9A-A10B-7EC54ABBD049}
+	EndGlobalSection
+EndGlobal

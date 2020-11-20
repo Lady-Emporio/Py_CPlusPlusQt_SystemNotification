@@ -1,0 +1,93 @@
+<head>
+	<style>
+		.headerGroup{
+				font-weight: bold;
+				font-size: 1.3 em;
+		}
+		.headerQuest{
+				font-weight: bold;
+				font-size: 1.1 em;
+				margin-left:3em;
+		}
+
+		table.mainTable {
+		margin-left:6em;
+		  border-collapse: collapse;
+		  border: 3px solid purple;
+		}
+
+		td{
+			border: 1px solid black;
+		}
+
+		.rowQuest {
+
+		}
+		</style>
+</head>
+<body>
+	<p><a href="{% url 'admin:index' %}">   admin </a>	</p>
+	<p><a href="{% url 'index' %}">   main page </a></p>
+	<p><a href="{% url 'SystemNotification:api_active' %}">   api active </a></p>
+	<p><a href="{% url 'SystemNotification:api_create' %}">   api create </a></p>
+	<p><a href="{% url 'SystemNotification:AllNotification' %}">   все Notification</a></p>
+	<p><a href="{% url 'SystemNotification:ThisMonthNotification' %}">   этот месяц Notification</a></p>
+	<p><a href="{% url 'SystemNotification:activeNotification' %}">   main page активные задачи</a></p>
+
+
+	{% if form %}
+	<form method="post">
+		{{ form.as_p }}
+		<input type="submit" value="Submit">
+	</form>
+	{% endif %}
+
+
+    {% if message %}
+	'{{message|safe}}'
+	{% endif %}
+
+	{% if filter %}
+	<p>Set filter: '{{filter}}'</p>
+	{% endif %}
+
+	{% if content %}
+
+	{% for GroupQuest in content %}
+	<div class="group">
+		<div class="headerGroup">{{GroupQuest.name}} - {{GroupQuest.id}}</div>
+				<table class="mainTable">
+					{% for quest in GroupQuest.quests %}
+					<tr class="rowQuest" style="background-color: rgb({{quest.back_red}},{{quest.back_green}},{{quest.back_blue}});color:rgb({{quest.red}},{{quest.green}},{{quest.blue}});">
+						<td>{{quest.name}} </td>
+						<td>{{quest.period|date:'Y-m-d H:i'}}  </td>
+						<td>{{quest.state}}  </td>
+					</tr>
+					<tr>
+
+					<td></td>
+					<td colspan="2">
+
+					<table>
+						{% for history in quest.history %}
+							<tr><td>{{history.period|date:'Y-m-d H:i'}}</td><td>{{history.state}}</td></tr>
+						{% endfor %}
+					</table>
+					</td>
+
+					</tr>
+
+					{% endfor %}
+				</table>
+
+	</div>
+	{% endfor %}
+
+
+	{% endif %}
+
+</body>
+
+
+
+

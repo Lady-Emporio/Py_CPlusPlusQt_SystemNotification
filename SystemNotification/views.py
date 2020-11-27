@@ -39,15 +39,15 @@ def index(request,IsFilter):
       ON NotificationHistory.notification=Notification.id
     LEFT JOIN NotificationState  as HistoryState
      ON HistoryState.id=NotificationHistory.state
-
+     WHERE Notification.isActive
         Par1qqqq1
 
     ORDER BY GroupNotification.id, Notification.id,NotificationHistory.period DESC
     """
     if IsFilter=="today":
-        sql=sql.replace("Par1qqqq1"," WHERE date('now','start of month')=date(Notification.period ,'start of month') ")
+        sql=sql.replace("Par1qqqq1"," AND date('now','start of month')=date(Notification.period ,'start of month') ")
     elif IsFilter=="active":
-        sql=sql.replace("Par1qqqq1"," WHERE Notification.state=1 ")
+        sql=sql.replace("Par1qqqq1"," AND Notification.state=1 ")
     else:
         sql=sql.replace("Par1qqqq1","")
     data=[]
@@ -126,6 +126,7 @@ def api_active(request):
     LEFT JOIN GroupNotification ON
     GroupNotification.id=Notification.parent
     WHERE Notification.state=1
+    AND Notification.isActive
     ORDER BY GroupNotification.id
     """
     data=[]

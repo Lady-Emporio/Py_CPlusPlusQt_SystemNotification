@@ -1,0 +1,279 @@
+{% load MyMainTags.MyTags %}  
+
+<html>
+<head>
+<style>
+
+/* НачалоОбласти header */
+
+body {margin:0;}
+h2 {
+  font-family: monospace;
+  color: #606060;
+}
+.header_a{
+box-shadow: 0 0px 5px 2px #23f349;
+padding: 10px;
+}
+nav {
+  padding-top: 20px;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+ul{
+  list-style: none; 
+  margin: 0;
+  padding: 0;
+}
+.header_ul > li {
+  display: inline-block;
+  margin-right: 20px;
+  position: relative;
+}
+.header_ul > li:last-child {
+  margin-right: 0;
+}
+ul.header_ul a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  outline: none;
+  font-family: 'Lora', serif;
+  
+}
+.hide_a {
+  font-family: "FontAwesome";
+  color: inherit;
+  padding-left: 10px;
+}
+.submenu {
+  position: absolute;
+  top: 150%;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  -webkit-transition: 0.5s ease-in-out;
+  -moz-transition: 0.5s ease-in-out;
+  -o-transition: 0.5s ease-in-out;
+  transition: 0.5s ease-in-out;
+}
+.header_nav ul {
+  background: #ECDAD6;
+}
+.header_nav ul a {
+  color: #695753;
+}
+
+.header_nav .submenu  {
+  -webkit-transform: scaleY(0);
+  -ms-transform: scaleY(0);
+  transform: scaleY(0);
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+  background: #FFAB51;
+  transition-duration:2s;
+  transition-delay: 2s;
+  width:400px;
+}
+.header_nav ul li:hover .submenu  {
+  -webkit-transform: scaleY(1);
+  -ms-transform: scaleY(1);
+  transform: scaleY(1);
+  transition-duration:0s;
+  transition-delay:0s;
+  width:400px;
+  border-color:green;
+}
+.header_nav ul li:hover a  {
+  box-shadow: 0 0px 5px 2px blue;
+}
+a.header_a:hover {
+	color:red;
+}
+
+/* КонецОбласти header */
+
+/* НачалоОбласти contentTable */
+
+		.headerGroup{
+				font-weight: bold;
+				font-size: 1.3 em;
+		}
+		.headerQuest{
+				font-weight: bold;
+				font-size: 1.1 em;
+				margin-left:3em;
+		}
+
+		table.mainTable {
+		margin-left:6em;
+		  border-collapse: collapse;
+		  border: 3px solid purple;
+		}
+
+		td{
+			border: 1px solid black;
+		}
+
+/* КонецОбласти contentTable */
+/* НачалоОбласти floatSet */
+	.LeftPage {
+		float:left;
+		margin-left:20px;
+	}
+    .RightPage {
+        float: right;
+		max-width:30%;
+		box-shadow: 0 0px 5px 2px black;
+		margin-right:20px;
+    }
+
+	.footer:before{
+    content: "";
+  display: block;
+ clear: both;
+    height: 2px;
+    background-color: #000;
+}
+
+/* КонецОбласти floatSet */
+
+/* НачалоОбласти lastAction */
+    .tr_log_is_addition:hover,
+    .tr_log_is_change:hover,
+    .tr_log_is_deletion:hover {
+		text-decoration: underline;
+		color:blue;
+	}
+    .tr_log_is_addition {
+		background-color:forestgreen;
+	}
+	.tr_log_is_change {
+		background-color:darkgray;
+	}
+	.tr_log_is_deletion {
+		background-color:firebrick;
+	}
+/* КонецОбласти lastAction */
+
+/* НачалоОбласти FlexObject */
+.flex_container_row {
+display: flex; 
+flex-direction:row;
+}
+.flex_container_col{
+
+display: flex; 
+flex-direction:column;
+}
+
+/* КонецОбласти FlexObject */
+/* НачалоОбласти АдаптивнаяТаблица */
+
+.resp-tab {
+    border-radius: 5px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 100%;
+}
+.resp-tab th, .resp-tab td {
+    font-size: 13px;
+    border: none;
+    font-family: Verdana, sans-serif;    
+    border: 1px solid #337AB7;
+    vertical-align: top;
+}
+.resp-tab th {
+    color: #FFF;
+    background: #337AB7;
+    font-weight: bold;
+    border: 1px solid #1a4a73;    
+    text-transform: uppercase;    
+    text-align: center;    
+}
+.resp-tab tr:nth-child(even) {
+    background: #edf7ff;
+}
+.resp-tab td span {
+    background: #337AB7;
+    color: #FFF;
+    display: none;
+    font-size: 11px;
+    font-weight: bold;
+    font-family: Verdana, sans-serif;    
+    text-transform: uppercase;        
+    padding: 5px 10px;
+    position: absolute;
+    top: 0;
+    left: 0;    
+}
+@media(max-width: 768px) {
+    .resp-tab thead {
+        display: none;
+    }
+    .resp-tab tr {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+    }
+    .resp-tab td {
+        margin: 0 -1px -1px 0;
+        padding-top: 35px;
+        position: relative;
+        width: 50%;
+    }
+    .resp-tab td span {
+        display: block;
+    }
+}
+@media(max-width: 480px) {
+    .resp-tab td {
+        width: 100%;
+    }
+}
+
+/* КонецОбласти АдаптивнаяТаблица */
+/* НачалоОбласти MainRightLeftPosition */    
+.mainLeftRight {
+    justify-content:space-between;  
+}
+
+/* КонецОбласти MainRightLeftPosition */
+
+/* НачалоОбласти comment */
+/* КонецОбласти comment */
+</style>
+
+{% block style %}
+{% endblock %}
+
+</head>
+<body>
+{% MyTagHeader %}
+
+
+
+{% block page %}
+<div class="flex_container_row mainLeftRight">
+    <div class="LeftPage">
+	    {% block content %}
+	    {% endblock %}
+    </div>
+    <div class="RightPage">
+	    {% MyTagLastAction %}
+    </div>	
+</div>
+
+{% endblock %}
+
+	<div class="footer">
+{% block footer %}
+	<div>This is footer</div>
+{% endblock %}
+		</div>
+</body>
+</html>

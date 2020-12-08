@@ -1,0 +1,255 @@
+﻿{% extends "base.html" %}
+
+
+{% block style %}
+<style>
+    .tr_extra {
+		visibility: hidden ;
+	}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+
+{% if message %}
+'{{message|safe}}'
+{% endif %}
+{% if text %}
+'{{text}}'
+{% endif %}
+
+<div id="contentChoose"></div>
+
+<form method="post" action="">
+	{% csrf_token %}
+	<div id="parentDiv">
+	<h4>Group №{{formParent.instance.id}}</h4>
+		{{formParent.name.label_tag   }}{{formParent.name}}
+		{{formParent.comment.label_tag   }}{{formParent.comment}}
+	</div>
+<div class="flex_container_row">
+<h1>Задача №{{pk}}</h1>
+	<input type="submit" value="Сохранить" style="box-shadow: 0px 0px 10px 5px #00FF2A inset;"/>
+	<input type="button" onclick="addComment()" value="Добавить комментарий" />
+</div>
+<div class="flex_container_row">
+<div class="flex_container_col">
+	{{formObject.name.label_tag   }} {{formObject.name}}
+	<span>Активный:{{formObject.isActive}}</span>
+	{{formObject.period.label_tag   }} {{formObject.period}}<button type="button" onclick="sendNowToInput(document.getElementsByClassName('ObjectPeriod')[0])">Сейчас</button>
+	
+	<button id="buttonParentChoose" onclick="beginChoose()" Mvalue="{{formObjectParentToChoose.id}}" type="button">{{formObjectParentToChoose.id}}--{{formObjectParentToChoose.name}}</button>
+	<input type="hidden" name="parentPk" value="{{formObjectParentToChoose.id}}"/>
+	{{formObject.state.label_tag   }} {{formObject.state}}
+</div>
+
+<div class="flex_container_col">
+{{formObject.comment}}
+</div>
+
+</div>
+
+	{{SubCommentFormSet.management_form}}
+	<table class="resp-tab">
+	<thead>
+        <tr>
+            <th>Комментарий</th>
+            <th>Период</th>
+			{% if formset.can_delete %}
+				<th><span>Удалить</span>{{formSubComment.DELETE}}</th>
+            {% endif %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for formSubComment in SubCommentFormSet %}
+
+		<tr 
+		{% if SubCommentFormSet.extra >= forloop.revcounter %}
+			class="tr_extra" id="tr_extra_{{forloop.revcounter}}"
+		{% endif %}
+        ">
+            <td><span>Комментарий</span>{{formSubComment.comment}}</td>
+            <td><span>Период</span>{{formSubComment.period}}</td>
+			{% if formset.can_delete %}
+				<td><span>Удалить</span>{{formSubComment.DELETE}}</td>
+            {% endif %}
+			{{formSubComment.id}}
+			{{formSubComment.notification}}
+		</tr>
+		 
+
+
+
+
+		{% endfor %}
+	</tbody>
+</table>
+
+
+</form>
+
+<script>
+	var commentTypeNameSubTable="id_"+"{{commentTypeNameSubTable}}"+"_set-TOTAL_FORMS";
+	var extraNumber=0{{SubCommentFormSet.extra}};
+	var extraNow=0;
+	var GlobalTimerId={};
+	function addComment() {
+		console.log("Add comment.");
+		extraNow=extraNow+1;
+		if (extraNow>extraNumber){
+			document.body.style.background="red";
+			return;
+		}
+		var tr=document.getElementById("tr_extra_"+extraNow);
+		tr.style.visibility="visible";
+
+		i=tr.getElementsByClassName("InputPeriod")[0]
+
+		d=new Date();
+		stringDate=d.getFullYear()+"-"+
+		String(d.getMonth()).padStart(2,'0')+"-"+
+		String(d.getDate()).padStart(2,'0')+"T"+
+		String(d.getHours()).padStart(2,'0')+":"+
+		String(d.getMinutes()).padStart(2,'0')+":"+
+		String(d.getSeconds()).padStart(2,'0');
+		i.value=stringDate;
+
+	};
+
+
+	function sendNowToInput(inputDatetime){
+		d=new Date();
+		stringDate=d.getFullYear()+"-"+
+		String(d.getMonth()).padStart(2,'0')+"-"+
+		String(d.getDate()).padStart(2,'0')+"T"+
+		String(d.getHours()).padStart(2,'0')+":"+
+		String(d.getMinutes()).padStart(2,'0')+":"+
+		String(d.getSeconds()).padStart(2,'0');
+		inputDatetime.value=stringDate;
+	}
+	function needSave(elem){
+		let n=Number(elem.id.replace("id_subnotificationcomments_set-","").replace("-comment",""));
+		let el=document.getElementById("id_subnotificationcomments_set-"+n+"-id").value;
+			
+		if(el==""){
+			return;	
+		}
+		let idToUpdate=Number(el);
+		ajax_saveCommentApi(idToUpdate,elem.value,elem);
+	}
+
+	function waitPress(elem){
+		if (elem.addEventListener) {
+		  elem.addEventListener('input', function() {
+				console.log("we are");
+				clearTimeout(GlobalTimerId[elem.id]);
+				elem.style.background="None";
+				GlobalTimerId[elem.id] = setTimeout(needSave, 5000,this);
+
+	
+			}, false);
+		}; 
+
+	};
+
+	function addAllTextAreaListener(){
+		let ww1=document.getElementsByTagName("textarea");
+		console.log(ww1.length);
+		let strBeginName="id_"+"{{commentTypeNameSubTable}}";
+		console.log(strBeginName);
+		for (let t of ww1 ) {
+			if( t.id.startsWith(strBeginName)  ){
+				console.log("Listen: "+t.id);
+				waitPress(t);
+			};
+		};
+	};
+	addAllTextAreaListener();
+
+	function ajax_saveCommentApi(pk,comment,elem){
+
+	const request = new XMLHttpRequest();
+	const url =  "{% url 'SystemNotification:apiSaveComment' %}";
+	request.open("POST", url, true);
+	request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	request.addEventListener("readystatechange", () => {
+		if(request.readyState === 4 && request.status === 200) {       
+			console.log(request.responseText);
+			if(request.responseText.toLowerCase().startsWith("Twilight".toLowerCase())){
+				elem.style.background="rgba(0,255,0, 0.5)";
+			}else{
+				elem.style.background="rgba(255,255,0, 0.5)";
+			}
+		}else{
+			elem.style.background="rgba(255,0,0, 0.5)";
+			console.log(request.readyState);
+			console.log(request.responseText);
+		}
+	});
+
+	let data={
+		"pk":pk,
+		"comment":comment,
+	};
+	let json = JSON.stringify(data);
+	console.log("send");
+	request.send(json);
+
+	};
+
+	function beginChoose(){
+		ajaxChangePage(1);
+	}
+
+
+	function ajaxChangePage(pageNumber) {
+        const request = new XMLHttpRequest();
+        const url = "{% url 'SystemNotification:test_page_choose' %}?page="+pageNumber+"&OnlyContent";
+        request.open('GET', url);
+        request.setRequestHeader('Content-Type', 'application/x-www-form-url');
+
+        request.addEventListener("readystatechange", () => {
+	        if (request.readyState === 4 && request.status === 200) {
+                d=document.getElementById("contentChoose");
+                d.innerHTML=request.responseText;
+            }
+        });
+        request.send();
+    }
+
+
+	function addParentListener(buttonView,inputValue) {
+        window.addEventListener("ChooseParent", function (event) {
+            buttonView.innerText = event.detail.mText;
+            inputValue.value = event.detail.mPk;
+			d=document.getElementById("parentDiv");
+			d.style.pointerEvents="None";
+			d.style.background="rgba(255,0,255,0.5)";
+        });
+    }
+
+    function paginationListOnClick(button) {
+        console.log(button.value);
+		console.log(button.innerText);
+        let el1=new CustomEvent("ChooseParent", {
+          detail: {
+            "mPk": button.value,
+			"mText": button.innerText,
+          }
+        });
+        window.dispatchEvent(el1);
+    }
+
+	var inputParentPk=document.getElementsByName("parentPk")[0];
+	var buttonParentChoose=document.getElementById("buttonParentChoose");
+	addParentListener(buttonParentChoose,inputParentPk);
+
+	function closeChooseParent(){
+		d=document.getElementById("contentChoose");
+		d.innerHTML="";
+	}
+</script>
+{% endblock %}

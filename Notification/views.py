@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+
 
 from django.http import HttpResponse
-import datetime
+from django.shortcuts import render
+
 
 def index(request):
 
@@ -71,4 +72,4 @@ def index(request):
     #КонецОбласти
     </pre>
     """
-    return render(request,"mainPage.html",{"message":message})
+    return render(request,"mainPage.html",{"text":message})

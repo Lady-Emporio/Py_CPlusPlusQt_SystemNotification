@@ -1,8 +1,9 @@
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'dc=wn$q$whc7i4sim-!*=$aawo%3*%-zau29+j&)g4s(pe4b@t'
-DEBUG = True
-ALLOWED_HOSTS = ['godod4.pythonanywhere.com']
+DEBUG = False
+ALLOWED_HOSTS = ['localhost']
+#ALLOWED_HOSTS = ['godod4.pythonanywhere.com']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,6 +23,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 ROOT_URLCONF = 'Notification.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -62,8 +64,15 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Moscow'
 
-STATIC_URL = '/static/'
-MEDIA_ROOT = '/home/godod4/dj_project/media'
+#STATIC_URL = '/static/'
+#MEDIA_ROOT = '/home/godod4/dj_project/media'
+#MEDIA_URL = '/media/'
+#STATIC_ROOT = '/home/godod4/dj_project/static'
+
+
+
+MEDIA_ROOT = r'C:\Users\prog2.HLEB\Desktop\Нужное\p\ProjectVs\SystemNotification/media'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/godod4/dj_project/static'
+STATIC_ROOT = r'C:\Users\prog2.HLEB\Desktop\Нужное\p\ProjectVs\SystemNotification/static'
 STATIC_URL = '/static/'
+

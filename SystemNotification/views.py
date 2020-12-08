@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404,HttpResponseRedirect
 import datetime
 from django.db import connection
 from django.http import JsonResponse
-from .models import Notification,GroupNotification,NotificationState
+from .models import Notification,GroupNotification,NotificationState,SubNotificationComments,HistorySubNotificationComments
+from .forms import NotificationFormObject,GroupNotificationFormObject
 from django.core import serializers
 import json
-
+from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
+from django.forms import Textarea
 
 
 @csrf_exempt
@@ -66,6 +68,7 @@ def index(request,IsFilter):
             "quests":[],
         }
         questData={
+            "pk":"",
             "name":"",
             "period":"",
             "state":"",
@@ -211,6 +214,7 @@ def __createNewQuest(data,colNombers,row):
     GroupData=__getThisGroup(data)
 
     questData={
+            "pk":row[colNombers["NotId"]],
             "name":row[colNombers["NotName"]],
             "period":row[colNombers["NotPeriod"]],
             "state":row[colNombers["NotStateName"]],
@@ -233,3 +237,151 @@ def __saveHistory(data,colNombers,row):
     }
     nowQuetst=__getThisQuest(data)
     nowQuetst["history"].append(historyData)
+
+
+from django.forms import inlineformset_factory
+from django.shortcuts import get_object_or_404
+
+
+
+
+from django import forms
+from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
+
+
+class ButtonWidget(forms.Widget):
+
+    def render(self,name, value, attrs=None, renderer=None):
+        sv=value.strftime("%Y-%m-%dT%H:%M:%S")
+        return f"<input class='InputPeriod' type='datetime-local' name='{name}' value='{sv}' step='1'>"
+
+def test_pk_create(request):
+
+
+    if request.method == "POST":
+        formObject=NotificationFormObject(request.POST, request.FILES,auto_id="not_",prefix="notPrefix_")
+        errorsValidate=[]
+        if not formObject.is_valid():
+            errorsValidate.append("Форма объекта не прошла валидацию.")
+        if len(errorsValidate)!=0:
+            raise Http404(" ".join(errorsValidate))
+        with transaction.atomic():
+            w=formObject.save(commit=False)
+            w.save()
+
+            linkW=w.test_get_absolute_url()
+            return HttpResponseRedirect(linkW)
+        raise Http404("Error with save")
+    else:
+        formObject=NotificationFormObject(auto_id="not_",prefix="notPrefix_")
+        return render(request,"SystemNotification/objectFull.html",{
+            "pk":"*",
+            "formObject":formObject
+        }) 
+
+def view_test_pk(request,pk):
+    n = get_object_or_404(Notification, pk=pk)
+    subCommentFormSet_Factory = inlineformset_factory(Notification,SubNotificationComments,
+                                                          #fields =""
+                                                          exclude=("isActive",),
+                                                          extra=3,
+                                                          widgets={'comment': Textarea(attrs={'cols': 80, 'rows': 2}),"period":ButtonWidget  },
+                                                          )
+
+    if request.method == "POST":
+        subCommentFormSet = subCommentFormSet_Factory(request.POST, request.FILES,instance=n)
+        formObject=NotificationFormObject(request.POST, request.FILES,instance=n,auto_id="not_",prefix="notPrefix_")
+        formParent=GroupNotificationFormObject(request.POST, request.FILES,instance=n.parent,auto_id="notParent_",prefix="notParentPrefix_")
+        errorsValidate=[]
+        if not subCommentFormSet.is_valid():
+            errorsValidate.append("Табличная часть комментарии не прошла валидацию.")
+        if not formObject.is_valid():
+            errorsValidate.append("Форма объекта не прошла валидацию.")
+        if not formParent.is_valid():
+            errorsValidate.append("Форма группы не прошла валидацию.")
+        if len(errorsValidate)!=0:
+            raise Http404(" ".join(errorsValidate))
+        with transaction.atomic():
+            parW=formObject.cleaned_data["parent"]
+            if formParent.instance.pk==None:
+                isNotClearComment=not formParent.cleaned_data["comment"]=="" and not formParent.cleaned_data["comment"].isspace()
+                isNotClearName=not formParent.cleaned_data["name"]=="" and not formParent.cleaned_data["name"].isspace()
+                if isNotClearComment or isNotClearName:
+                    parW=formParent.save()
+            else:
+                formParent.save()
+            parentId=request.POST.get("parentPk");
+            if parentId!="":
+                parW = get_object_or_404(GroupNotification, pk=parentId)
+            w=formObject.save(commit=False)
+            w.parent=parW;
+            w.save()
+            for subF in subCommentFormSet.forms:
+                isNotClearComment=not subF.cleaned_data["comment"]=="" and not subF.cleaned_data["comment"].isspace()
+                if isNotClearComment:
+                    subF.save()
+
+            linkW=w.test_get_absolute_url()
+            return HttpResponseRedirect(linkW)
+        raise Http404("Error with save")
+    else:
+        subCommentFormSet = subCommentFormSet_Factory(instance=n)
+        formObject=NotificationFormObject(instance=n,auto_id="not_",prefix="notPrefix_")
+        formParent=GroupNotificationFormObject(instance=n.parent,auto_id="notParent_",prefix="notParentPrefix_")
+        return render(request,"SystemNotification/objectFull.html",{
+            "pk":pk,
+            "formObject":formObject,
+            "formObjectParentToChoose":n.parent,
+            "formParent":formParent,
+            "SubCommentFormSet":subCommentFormSet,
+            "commentTypeNameSubTable":"SubNotificationComments".lower()
+        }) 
+
+@csrf_exempt
+def api_SaveComment(request):
+    json_string=request.body.decode(errors="ignore");
+    data = json.loads(json_string)
+    id=data["pk"]
+    text=data["comment"]
+    obj = SubNotificationComments.objects.get(pk=id)
+    obj.comment=text
+    obj.save()
+
+    return HttpResponse("Twilight"+str(datetime.datetime.now()))
+
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+def test_page_choose(request):
+    contact_list = GroupNotification.objects.all()
+    paginator = Paginator(contact_list, 25) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        contacts = paginator.page(paginator.num_pages)
+    
+    onlyContentAjax=False;    
+    if request.GET.get("OnlyContent")!=None:
+        onlyContentAjax=True;    
+    return render(request, "SystemNotification/Pagination.html", {'contacts': contacts,"onlyContentAjax":onlyContentAjax})
+
+
+def Notification_list_paginator(request):
+    contact_list = Notification.objects.all()
+    paginator = Paginator(contact_list, 25) # Show 25 contacts per page
+    page = request.GET.get('page')
+    try:
+        listObjects = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        listObjects = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        listObjects = paginator.page(paginator.num_pages)
+        
+    return render(request, "SystemNotification/Notification_list_paginator.html", {'listObjects': listObjects})

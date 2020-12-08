@@ -43,11 +43,23 @@
     <Compile Include="Notification\wsgi.py" />
     <Compile Include="SystemNotification\admin.py" />
     <Compile Include="SystemNotification\apps.py" />
+    <Compile Include="SystemNotification\clearSky.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SystemNotification\CrudNotification.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SystemNotification\forms.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SystemNotification\migrations\__init__.py" />
     <Compile Include="SystemNotification\models.py" />
+    <Compile Include="SystemNotification\templatetags\MyMainTags\MyTags.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SystemNotification\templatetags\MyMainTags\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SystemNotification\tests.py" />
     <Compile Include="SystemNotification\urls.py">
       <SubType>Code</SubType>
@@ -57,14 +69,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="SystemNotification\templates\SystemNotification\index.html" />
+    <Content Include="templates\api.html" />
+    <Content Include="templates\base.html" />
+    <Content Include="templates\404.html" />
+    <Content Include="templates\mainPage.html" />
+    <Content Include="templates\SystemNotification\Notification_list_paginator.html" />
+    <Content Include="templates\SystemNotification\object.html" />
+    <Content Include="templates\SystemNotification\objectFull.html" />
+    <Content Include="templates\SystemNotification\Pagination.html" />
+    <Content Include="templates\tags\MyTagHeader.html" />
+    <Content Include="templates\tags\MyTagLastAction.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Notification\" />
     <Folder Include="SystemNotification\" />
     <Folder Include="SystemNotification\migrations\" />
-    <Folder Include="SystemNotification\templates\" />
-    <Folder Include="SystemNotification\templates\SystemNotification\" />
+    <Folder Include="SystemNotification\templatetags\" />
+    <Folder Include="SystemNotification\templatetags\MyMainTags\" />
+    <Folder Include="templates\" />
+    <Folder Include="templates\SystemNotification\" />
+    <Folder Include="templates\tags\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 

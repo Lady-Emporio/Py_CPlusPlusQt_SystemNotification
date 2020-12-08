@@ -1,0 +1,48 @@
+﻿
+
+<nav class="header_nav">
+ <h3>Base '{{now}}'</h3>
+  <ul class="header_ul">
+    <li><a class="header_a" href="{% url 'admin:index' %}">admin</a></li>
+    <li><a class="header_a" href="{% url 'index' %}">main page</a></li>
+	<li><span class="header_a">Api ▼</span>
+		<ul class="submenu">
+			<li><a  class="header_a" href="{% url 'SystemNotification:api_active' %}">api active</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:api_create' %}">api create</a></li>
+		</ul>
+    </li>
+	<li><span  class="header_a" >Notification ▼</span>
+		<ul class="submenu">
+				<li><a  class="header_a" href="{% url 'SystemNotification:test_pk_create' %}">Создать</a></li>
+				<li><a  class="header_a" href="{% url 'SystemNotification:Notification_list_paginator' %}">Список задач</a></li>
+			
+
+				<li><a href="{% url 'SystemNotification:AllNotification' %}" class="header_a" >все Notification</a></li>
+				<li><a href="{% url 'SystemNotification:ThisMonthNotification' %}" class="header_a" >этот месяц Notification</a></li>
+			</ul>
+	</li>
+
+
+	<li><span class="header_a">Testing ▼</span>
+		<ul class="submenu">
+			<li><a  class="header_a" href="{% url 'SystemNotification:test_page_choose' %}">Тест пагинатора</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:Notification_list_paginator' %}">Список задач</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:test_pk_create' %}">Новый</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:test_pk' pk=1 %}">test pk 1</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:test_pk' pk=3 %}">test pk 3</a></li>
+			<li><a  class="header_a" href="{% url 'SystemNotification:test_pk' pk=14 %}">test pk 14</a></li>
+		</ul>
+    </li>
+	<li><span class="header_a">Старый функционал ▼</span>
+		<ul class="submenu">
+			<li><a href="{% url 'SystemNotification:updateObjectNotification' pk=1 %}" class="header_a" >Open 1</a></li>
+			<li><a href="{% url 'SystemNotification:createObjectNotification' %}" class="header_a" >Create</a></li>
+		</ul>
+    </li>
+	  
+
+
+
+	<li><a class="header_a" href="{% url 'SystemNotification:activeNotification' %}">Активные задачи</a></li>
+  </ul>
+</nav>

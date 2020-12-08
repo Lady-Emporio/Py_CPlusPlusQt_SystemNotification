@@ -1,0 +1,134 @@
+﻿
+
+
+
+
+
+
+{% if onlyContentAjax %}
+
+<div style="
+        position: absolute;
+        top: 150px;
+        left: 300px;
+        border: 1px solid green;overflow: scroll;padding: 30px; background:grey;
+        height: 30%;" id="parentDivContentButtons">
+            {% for contact in contacts %}
+               <div><button type="button" onclick="paginationListOnClick(this)" value="{{contact.id}}">{{contact.id}}---{{contact.name}}</button></div>
+            {% endfor %}
+
+            <div class="pagination" style="
+                margin-top: 20px;">
+                <span class="step-links">
+                    {% if contacts.has_previous %}
+                        <a href="?page={{ contacts.previous_page_number }}">previous</a>
+                        <button type="button" onclick="ajaxChangePage('{{ contacts.previous_page_number }}')">В фоне прошлый</button>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+                    </span>
+
+                    {% if contacts.has_next %}
+                        <a href="?page={{ contacts.next_page_number }}">next</a>
+                        <button type="button" onclick="ajaxChangePage('{{ contacts.next_page_number }}')">В фоне следующий</button>
+                    {% endif %}
+                </span>
+            </div>
+    <button type="button" style="
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        width: 30px;
+        height: 30px;
+        border: 1px solid green;
+    " onclick="closeChooseParent()">X</button>
+    </div>
+
+{% else %}
+<div id="testDivId" style="width:100px;height:100px;border:10px solid green;">
+
+</div>
+
+
+<div id="contentChoose">
+
+    <div style="
+        position: absolute;
+        top: 150px;
+        left: 300px;
+        border: 5px solid green;overflow: scroll;padding: 30px;
+        height: 30%;">
+            {% for contact in contacts %}
+               <div><button type="button" onclick="paginationListOnClick(this)" value="{{contact.id}}">{{contact.id}}---{{contact.name}}</button></div>
+            {% endfor %}
+
+            <div class="pagination" style="
+                margin-top: 20px;">
+                <span class="step-links">
+                    {% if contacts.has_previous %}
+                        <a href="?page={{ contacts.previous_page_number }}">previous</a>
+                        <button onclick="ajaxChangePage('{{ contacts.previous_page_number }}')">В фоне прошлый</button>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.
+                    </span>
+
+                    {% if contacts.has_next %}
+                        <a href="?page={{ contacts.next_page_number }}">next</a>
+                        <button type="button" onclick="ajaxChangePage('{{ contacts.next_page_number }}')">В фоне следующий</button>
+                    {% endif %}
+                </span>
+            </div>
+    
+    </div>
+
+</div>
+
+
+<script>
+    function addParentListener(elem) {
+        window.addEventListener("ChooseParent", function (event) {
+            elem.innerText = event.detail.mValue;
+            elem.style.background = "red";
+        });
+    }
+    function paginationListOnClick(button) {
+        console.log(button.value);
+        let el1=new CustomEvent("ChooseParent", {
+          detail: {
+            "mValue": button.value,
+          }
+        });
+        window.dispatchEvent(el1);
+    }
+    addParentListener(document.getElementById("testDivId"))   
+
+
+
+    function ajaxChangePage(pageNumber) {
+        const request = new XMLHttpRequest();
+        const url = "{% url 'SystemNotification:test_page_choose' %}?page="+pageNumber+"&OnlyContent";
+        request.open('GET', url);
+        request.setRequestHeader('Content-Type', 'application/x-www-form-url');
+
+        request.addEventListener("readystatechange", () => {
+	        if (request.readyState === 4 && request.status === 200) {
+                d=document.getElementById("contentChoose");
+                d.innerHTML=request.responseText;
+            }
+        });
+        request.send();
+    }
+</script>
+
+
+
+{% endif %}
+
+
+
+
+
+

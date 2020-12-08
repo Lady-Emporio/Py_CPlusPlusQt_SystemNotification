@@ -1,0 +1,22 @@
+﻿
+
+<div>
+    Last update {% now "Y-m-d H:i:s" %}
+    <table>
+    {% for i in lastLog %}
+    <tr class="
+        {% if i.is_addition %} tr_log_is_addition {% endif %}
+        {% if i.is_change %} tr_log_is_change {% endif %}
+        {% if i.is_deletion %} tr_log_is_deletion {% endif %}
+        " onclick="document.location = '{{i.get_admin_url}}'">
+
+        <td>{{i.action_time}}</td>
+        <td>{{i.object_repr}}</td>
+        <td>{{i.user}}</td>        
+        <td>{{i.get_action_flag_display}}</td>
+        <td>{{i.get_change_message}}</td>
+        </a>
+    </tr>
+    {% endfor %}
+    </table>
+</div>

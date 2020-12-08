@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 import datetime
-
+from django.urls import reverse
 
 
 class NotificationState(models.Model):
@@ -27,7 +27,7 @@ class GroupNotification(models.Model):
 	comment = models.TextField(db_column="comment",blank=True)
 	isActive = models.BooleanField(db_column="isActive",default=True)
 	def __str__(self):
-		return '<Задача: %s: %s>' % (self.pk, self.name)
+		return '<ГруппаЗадач: %s: %s>' % (self.pk, self.name)
 	class Meta:
 		db_table = 'GroupNotification'
 		verbose_name_plural="Группы задач"
@@ -41,8 +41,9 @@ class Notification(models.Model):
 	parent = models.ForeignKey('GroupNotification',db_column="parent",on_delete=models.CASCADE,null=True,blank=True)
 	state = models.ForeignKey('NotificationState', db_column="state",on_delete=models.PROTECT,null=True,blank=True, default=1)
 	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	comment = models.TextField(db_column="comment",blank=True)
 	def __str__(self):
-		return '<Подзадача: %s: %s from %s -%s>' % (self.pk, self.name,self.parent,self.state)
+		return '<Задача: %s: %s from %s -%s>' % (self.pk, self.name,self.parent,self.state)
 	class Meta:
 		db_table = 'Notification'
 		verbose_name_plural="Задачи"
@@ -58,6 +59,37 @@ class Notification(models.Model):
 			print("Создан новый NotificationHistory")
 		else:
 			print("Перезаписан существующий NotificationHistory")
+	def get_absolute_url(self):
+		return reverse('SystemNotification:updateObjectNotification', args=[str(self.id)])
+	def test_get_absolute_url(self):
+		return reverse('SystemNotification:test_pk', args=[str(self.id)])
+
+
+class SubNotificationComments(models.Model):
+	notification = models.ForeignKey('Notification', db_column="notification",on_delete=models.CASCADE,null=True,blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	comment = models.TextField(db_column="comment",blank=True)
+	class Meta:
+		db_table = 'SubNotificationComments'
+		verbose_name_plural="Комментарии задач"
+		verbose_name="Комментария к задаче"
+		ordering=["-period"]
+	def save(self, *args, **kwargs):
+		super(SubNotificationComments, self).save(*args, **kwargs)
+		history=HistorySubNotificationComments()
+		history.notificationComment=self;
+		history.comment=self.comment;
+		history.save()
+
+class HistorySubNotificationComments(models.Model):
+	notificationComment = models.ForeignKey('SubNotificationComments', db_column="notificationComment",on_delete=models.CASCADE,null=True,blank=True)
+	comment = models.TextField(db_column="comment",blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	class Meta:
+		db_table = 'HistorySubNotificationComments'
+		verbose_name_plural="Истории изменений комментов задач"
+		verbose_name="История изменений комментов задачи"
+		ordering=["-period"]
 
 class NotificationHistory(models.Model):
 	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)

@@ -1,0 +1,16 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+{% if message %}
+'{{message|safe}}'
+{% endif %}
+
+
+<form method="post" action="">
+    {{form.as_p}}
+    {% csrf_token %}
+    <input type="submit" value="We are" />
+</form>
+
+{% endblock %}

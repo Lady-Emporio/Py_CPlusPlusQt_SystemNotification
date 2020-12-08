@@ -1,0 +1,86 @@
+﻿
+
+
+{% extends "base.html" %}
+
+{% block style %}
+
+<style>
+.f {
+    display:flex;
+    border:1px solid green;
+    flex-direction:column;
+    justify-content:space-between;
+    flex-grow:1;
+}
+.Row {
+    flex-direction:column;
+}
+.Column{
+    flex-direction:row;
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+    <div>
+
+            {% for notif in listObjects %}
+                <a href="{{notif.test_get_absolute_url}}">
+                    {{notif.pk}}
+                <div style="max-width:60%;">
+                    <div class="f Column">
+                        <div class="f Row">{{notif.parent}}</div>
+
+                        <div class="f Row">
+                            <div class="f Column">{{notif.name}}</div>
+
+                            <div class="f Column">
+                                {% if notif.isActive %}
+                                <div>Активная</div>
+                                {% else %}
+                                <div style="background:red;">Отключена</div>
+                                 {% endif %}
+                                <div>{{notif.state}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="f Column">
+                        <span style="
+                            color: blue;
+                            font-weight: bold;
+                            font-style: italic;
+                        ">{{notif.period |date:'Y-m-d H:i'}}</span>
+                        {{notif.comment |slice:":200" }}                    
+                    </div>
+                    
+                </div>
+                </a>
+                <div style="background:rgb(139,228,243);height:3px;width:100%; margin-top: 10px;margin-bottom: 10px;"></div>
+            {% endfor %}
+
+            <div class="pagination" style="
+                margin-top: 20px;">
+                <span class="step-links">
+                    {% if listObjects.has_previous %}
+                        <a href="?page={{ listObjects.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ listObjects.number }} of {{ listObjects.paginator.num_pages }}.
+                    </span>
+
+                    {% if listObjects.has_next %}
+                        <a href="?page={{ listObjects.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+    
+    </div>
+
+{% endblock %}
+
+
+

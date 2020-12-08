@@ -40,7 +40,7 @@ class Notification(models.Model):
 	isActive = models.BooleanField(db_column="isActive",default=True)
 	parent = models.ForeignKey('GroupNotification',db_column="parent",on_delete=models.CASCADE,null=True,blank=True)
 	state = models.ForeignKey('NotificationState', db_column="state",on_delete=models.PROTECT,null=True,blank=True, default=1)
-	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now,db_index=True,blank=True)
 	comment = models.TextField(db_column="comment",blank=True)
 	def __str__(self):
 		return '<Задача: %s: %s from %s -%s>' % (self.pk, self.name,self.parent,self.state)
@@ -67,7 +67,7 @@ class Notification(models.Model):
 
 class SubNotificationComments(models.Model):
 	notification = models.ForeignKey('Notification', db_column="notification",on_delete=models.CASCADE,null=True,blank=True)
-	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now,db_index=True,blank=True)
 	comment = models.TextField(db_column="comment",blank=True)
 	class Meta:
 		db_table = 'SubNotificationComments'
@@ -84,7 +84,7 @@ class SubNotificationComments(models.Model):
 class HistorySubNotificationComments(models.Model):
 	notificationComment = models.ForeignKey('SubNotificationComments', db_column="notificationComment",on_delete=models.CASCADE,null=True,blank=True)
 	comment = models.TextField(db_column="comment",blank=True)
-	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now,db_index=True,blank=True)
 	class Meta:
 		db_table = 'HistorySubNotificationComments'
 		verbose_name_plural="Истории изменений комментов задач"
@@ -92,7 +92,7 @@ class HistorySubNotificationComments(models.Model):
 		ordering=["-period"]
 
 class NotificationHistory(models.Model):
-	period=models.DateTimeField(db_column="period",default=datetime.datetime.now(),db_index=True,blank=True)
+	period=models.DateTimeField(db_column="period",default=datetime.datetime.now,db_index=True,blank=True)
 	notification = models.ForeignKey('Notification', db_column="notification",on_delete=models.CASCADE,null=True,blank=True)
 	state = models.ForeignKey('NotificationState', db_column="state",on_delete=models.PROTECT,null=True,blank=True)
 	def __str__(self):

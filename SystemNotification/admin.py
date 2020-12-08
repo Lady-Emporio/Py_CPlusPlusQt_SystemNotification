@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *	
 
 
+admin.site.register(NotificationState)
 
 class GroupNotificationAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
